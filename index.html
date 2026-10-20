@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173f35">
+<meta name="description" content="Checklist strength training mingguan, pemanasan, timer, dan lari santai.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Latihan Rutin — Strength & Lari</title>
+<style>
+:root{--bg:#f4f6f2;--card:#fff;--ink:#1c2924;--muted:#64736b;--line:#dfe6df;--green:#1c5948;--mint:#e5f2e9;--orange:#fff0d9;--shadow:0 8px 26px rgba(24,54,42,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:linear-gradient(135deg,#173f35,#26735a);color:#fff;padding:26px 18px 32px;border-radius:0 0 26px 26px}
+.wrap{max-width:780px;margin:auto;padding:0 16px}header .wrap{padding:0}h1{font-size:clamp(1.65rem,5vw,2.3rem);line-height:1.15;margin:8px 0}header p{color:#d8eee3;margin:8px 0 0}.eyebrow{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:#bfe5cf}
+main{padding:18px 0 42px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}.stat{font-size:1.6rem;font-weight:800}.muted{color:var(--muted);font-size:.9rem}.tag{display:inline-block;background:var(--mint);color:var(--green);padding:4px 9px;border-radius:99px;font-size:.78rem;font-weight:750}
+h2{font-size:1.15rem;margin:0 0 10px}h3{font-size:1rem;margin:0}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:11px 14px;font-weight:750;background:var(--green);color:#fff}button.secondary{background:#edf2ee;color:var(--ink);border:1px solid var(--line)}button.small{padding:7px 10px;font-size:.86rem}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.progress{height:8px;background:#e8eee9;border-radius:99px;overflow:hidden;margin:10px 0}.progress>div{height:100%;background:#2b8a61;width:0%;transition:width .2s}
+.daybox{background:var(--mint);border-radius:14px;padding:13px;margin-top:12px}.item{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.item input{width:21px;height:21px;accent-color:var(--green);margin-top:2px;flex-shrink:0}.item label{flex:1}.dose{display:block;color:var(--muted);font-size:.88rem;margin-top:2px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}.timer{font-size:2.8rem;letter-spacing:.04em;font-weight:850;text-align:center;font-variant-numeric:tabular-nums;margin:8px 0}.timer-controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.field{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.field input,.field select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px;max-width:100%}.notice{background:var(--orange);padding:12px 14px;border-radius:13px;font-size:.9rem}.footer{text-align:center;color:var(--muted);font-size:.82rem;padding:12px}
+@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.card{padding:14px}.row.mobile-stack{align-items:flex-start;flex-direction:column}.timer{font-size:2.45rem}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="eyebrow">Rencana mingguan</div>
+  <h1>Latihan Rutin</h1>
+  <p>Strength training · Lari 3 km · Persiapan pendakian</p>
+</div></header>
+<main class="wrap">
+  <div class="grid">
+    <section class="card"><div class="muted">Jadwal rutin</div><div class="stat">Selasa</div><div class="muted">1 kali setiap minggu</div></section>
+    <section class="card"><div class="muted">Progres sesi ini</div><div class="stat" id="progressText">0%</div><div class="progress"><div id="progressBar"></div></div><div class="muted" id="progressCount">0 dari 19 langkah</div></section>
+  </div>
+
+  <section class="card">
+    <div class="row mobile-stack"><div><h2>Jadwal & penanda waktu</h2><div class="muted" id="todayLine"></div></div><span class="tag" id="scheduleStatus">Jadwal mingguan</span></div>
+    <div class="daybox"><strong id="scheduleTitle">Sesi berikutnya</strong><div id="scheduleDesc" class="muted"></div></div>
+    <div class="field" style="margin-top:12px">
+      <label for="preferredTime" class="muted">Jam latihan pilihan</label>
+      <input id="preferredTime" type="time" value="16:00">
+      <button id="saveTime" class="secondary">Simpan jam</button>
+    </div>
+    <p class="muted" style="margin-bottom:0">Aplikasi ini menandai jadwal saat dibuka. Agar tetap sederhana dan offline, aplikasi tidak mengirim notifikasi jika ditutup.</p>
+  </section>
+
+  <section class="card">
+    <div class="section-head"><h2>1. Pemanasan</h2><button class="small secondary" data-checkall="warmup">Centang semua</button></div>
+    <div id="warmup"></div>
+  </section>
+  <section class="card">
+    <div class="section-head"><h2>2. Strength training</h2><span class="tag">Istirahat 60–90 dtk</span></div>
+    <div id="strength"></div>
+  </section>
+  <section class="card">
+    <div class="section-head"><h2>3. Lari & pendinginan</h2><button class="small secondary" data-checkall="finish">Centang semua</button></div>
+    <div id="finish"></div>
+    <div class="notice">Lari 500 meter bersifat opsional: lakukan santai hanya jika kaki masih nyaman. Hentikan jika nyeri tulang kering atau lutut muncul.</div>
+  </section>
+
+  <section class="card">
+    <h2>Timer latihan / istirahat</h2>
+    <p class="muted">Atur durasi lalu mulai. Timer berjalan selama halaman ini tetap terbuka.</p>
+    <div class="field" style="justify-content:center">
+      <label for="minutes">Menit</label><input id="minutes" type="number" min="0" max="180" value="1" style="width:74px">
+      <label for="seconds">Detik</label><input id="seconds" type="number" min="0" max="59" value="0" style="width:74px">
+    </div>
+    <div class="timer" id="timerDisplay">01:00</div>
+    <div class="timer-controls"><button id="startTimer">Mulai</button><button id="pauseTimer" class="secondary">Jeda</button><button id="resetTimer" class="secondary">Reset</button></div>
+    <p id="timerMessage" class="muted" style="text-align:center;margin-bottom:0">Siap saat kamu siap.</p>
+  </section>
+
+  <section class="card">
+    <div class="row mobile-stack"><div><h2>Catatan sesi</h2><div class="muted">Disimpan di perangkat/browser ini.</div></div><button id="saveNotes">Simpan catatan</button></div>
+    <textarea id="notes" rows="3" placeholder="Contoh: gerakan terasa nyaman, energi cukup..." style="width:100%;margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;resize:vertical"></textarea>
+    <div class="muted" id="savedLabel" style="margin-top:6px"></div>
+    <div class="row" style="margin-top:14px"><button class="secondary" id="resetSession">Reset checklist sesi</button><button class="secondary" id="clearHistory">Reset semua data</button></div>
+  </section>
+  <div class="footer">Tips: fokus pada teknik yang benar, latihan ringan–sedang, dan progres bertahap.</div>
+</main>
+<script>
+const groups = {
+ warmup:[
+  ["Jalan di tempat","60 detik"],["Arm circles","30 detik"],["Hip circles","30 detik"],["Leg swings","10 kali per kaki"],["Ankle circles","10 putaran per kaki"],["Squat ringan","10 repetisi"],["Calf raises ringan","10 repetisi"]],
+ strength:[
+  ["Squat","3 × 10 repetisi"],["Reverse lunge","2 × 8 per kaki"],["Glute bridge","3 × 12 repetisi"],["Calf raises","2 × 12 repetisi"],["Bird dog","2 × 8 per sisi"],["Hip hinge","2 × 12 repetisi"],["Clamshell","2 × 12 per sisi"],["Plank","2 × 20–30 detik"],["Wall sit","2 × 20–30 detik"]],
+ finish:[
+  ["Istirahat setelah strength training","3–5 menit"],["Lari santai (opsional)","500 meter"],["Jalan kaki pendinginan","3–5 menit"]]
+};
+const allItems = [...groups.warmup,...groups.strength,...groups.finish];
+const total = allItems.length;
+const key = "latihanRutinOfflineV1";
+let state = {checks:{},notes:"",preferredTime:"16:00",lastSession:""};
+try { const saved = JSON.parse(localStorage.getItem(key)||"null"); if(saved) state={...state,...saved}; } catch(e){}
+function persist(){try{localStorage.setItem(key,JSON.stringify(state));}catch(e){}}
+function renderGroup(id,items){
+ const root=document.getElementById(id); root.innerHTML="";
+ items.forEach(([name,dose])=>{
+  const checked=!!state.checks[name];
+  const div=document.createElement("div");div.className="item";
+  const input=document.createElement("input");input.type="checkbox";input.id="c-"+slug(name);input.checked=checked;
+  input.addEventListener("change",()=>{state.checks[name]=input.checked;state.lastSession=localDate();persist();updateProgress();});
+  const label=document.createElement("label");label.htmlFor=input.id;
+  const strong=document.createElement("strong");strong.textContent=name;
+  const span=document.createElement("span");span.className="dose";span.textContent=dose;
+  label.append(strong,span);div.append(input,label);root.append(div);
+ });
+}
+function slug(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,"-")}
+function updateProgress(){
+ const count=allItems.filter(([name])=>state.checks[name]).length, pct=Math.round(count/total*100);
+ document.getElementById("progressText").textContent=pct+"%";
+ document.getElementById("progressBar").style.width=pct+"%";
+ document.getElementById("progressCount").textContent=count+" dari "+total+" langkah";
+}
+function localDate(d=new Date()){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function updateSchedule(){
+ const now=new Date(), days=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+ document.getElementById("todayLine").textContent=days[now.getDay()]+", "+now.toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+ document.getElementById("preferredTime").value=state.preferredTime||"16:00";
+ let diff=(2-now.getDay()+7)%7;
+ if(diff===0){const [h,m]=(state.preferredTime||"16:00").split(":").map(Number);if(now.getHours()*60+now.getMinutes()>=h*60+m)diff=7;}
+ const target=new Date(now);target.setDate(now.getDate()+diff);
+ const dateText=diff===0?"Hari ini":days[target.getDay()]+", "+target.toLocaleDateString("id-ID",{day:"numeric",month:"long"});
+ document.getElementById("scheduleTitle").textContent=diff===0?"Waktunya latihan!":"Sesi berikutnya: "+dateText;
+ document.getElementById("scheduleDesc").textContent="Target mulai pukul "+(state.preferredTime||"16:00")+" · pemanasan, strength training, lalu lari 500 m opsional.";
+ const status=document.getElementById("scheduleStatus");status.textContent=now.getDay()===2?"Hari strength training":"Rutin setiap Selasa";
+}
+document.querySelectorAll("[data-checkall]").forEach(btn=>btn.addEventListener("click",()=>{
+ const group=btn.dataset.checkall==="warmup"?groups.warmup:groups.finish;
+ const shouldCheck=!group.every(([name])=>state.checks[name]);
+ group.forEach(([name])=>state.checks[name]=shouldCheck);persist();renderAll();
+}));
+function renderAll(){renderGroup("warmup",groups.warmup);renderGroup("strength",groups.strength);renderGroup("finish",groups.finish);updateProgress();}
+document.getElementById("saveTime").addEventListener("click",()=>{state.preferredTime=document.getElementById("preferredTime").value||"16:00";persist();updateSchedule();});
+document.getElementById("notes").value=state.notes||"";
+document.getElementById("saveNotes").addEventListener("click",()=>{state.notes=document.getElementById("notes").value;persist();document.getElementById("savedLabel").textContent="Catatan tersimpan di perangkat ini.";});
+document.getElementById("resetSession").addEventListener("click",()=>{if(confirm("Hapus centang checklist untuk sesi ini?")){state.checks={};persist();renderAll();}});
+document.getElementById("clearHistory").addEventListener("click",()=>{if(confirm("Reset semua checklist, jam pilihan, dan catatan?")){state={checks:{},notes:"",preferredTime:"16:00",lastSession:""};persist();document.getElementById("notes").value="";document.getElementById("savedLabel").textContent="";renderAll();updateSchedule();}});
+let timerId=null,remaining=60;
+function getInputSeconds(){let m=Math.max(0,Math.min(180,parseInt(document.getElementById("minutes").value)||0));let s=Math.max(0,Math.min(59,parseInt(document.getElementById("seconds").value)||0));return m*60+s;}
+function showTimer(){document.getElementById("timerDisplay").textContent=String(Math.floor(remaining/60)).padStart(2,"0")+":"+String(remaining%60).padStart(2,"0");}
+document.getElementById("startTimer").addEventListener("click",()=>{if(timerId)return;if(remaining<=0)remaining=getInputSeconds();if(remaining<=0){document.getElementById("timerMessage").textContent="Masukkan durasi timer terlebih dahulu.";return;}document.getElementById("timerMessage").textContent="Timer berjalan…";timerId=setInterval(()=>{remaining--;showTimer();if(remaining<=0){clearInterval(timerId);timerId=null;document.getElementById("timerMessage").textContent="Waktu selesai! Istirahat atau lanjut jika siap.";try{if("vibrate" in navigator)navigator.vibrate([200,100,200]);}catch(e){}}},1000);});
+document.getElementById("pauseTimer").addEventListener("click",()=>{if(timerId){clearInterval(timerId);timerId=null;document.getElementById("timerMessage").textContent="Timer dijeda."; }});
+document.getElementById("resetTimer").addEventListener("click",()=>{if(timerId)clearInterval(timerId);timerId=null;remaining=getInputSeconds();showTimer();document.getElementById("timerMessage").textContent="Timer siap.";});
+["minutes","seconds"].forEach(id=>document.getElementById(id).addEventListener("change",()=>{if(!timerId){remaining=getInputSeconds();showTimer();}}));
+renderAll();updateSchedule();remaining=getInputSeconds();showTimer();
+</script>
+<script>
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
